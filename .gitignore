@@ -1,0 +1,8 @@
+.dep/*
+.obj/*
+install
+*.a
+*.so
+testProgram
+makefile.old
+old/*
