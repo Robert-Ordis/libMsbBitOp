@@ -8,18 +8,14 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-/**
- * MSBビット配列操作補助ライブラリ
- *
- */
-
 
 /**
  *  \struct	msb_cursor_t
- *  \brief		文字列バッファをビット配列として、シークしながら読んでくための構造体
- *  \brief		「ビット配列」なのでMSBを0として数えます
+ *  \brief		Cursor structure for seeking bit array(uint8_t[]).
+ *  \remarks	Defining 0th bit as MSB because this treats "bit ARRAY".
  */
-typedef struct msb_cursor_s{
+typedef struct msb_cursor_s msb_cursor_t;
+struct msb_cursor_s{
 	//取り扱う実データ群
 	uint8_t			*m_buf;				//文字列バッファへのポインタ
 	size_t			m_buf_len;			//扱っている文字列バッファの長さ
@@ -35,58 +31,61 @@ extern "C"
 {
 #endif
 
-///初期化系列
+///Initiation bit cursor.
 /**
- *  \brief ビット配列の初期化
+ *  \fn			msb_cursor_init
+ *  \brief		Initializing bitarray seeking cursor.
  *  
- *  \param		初期化したいビット配列。NULLの場合はmallocで生成
- *  \return	初期化したビット配列構造体
+ *  \param		*s	Cursor instance.
+ *  \return	Cursor instance.
  *  
- *  \details この段階ではまだバッファを指定しません。
+ *  \remarks	This function not specify the buffer.
  */
 msb_cursor_t	*msb_cursor_init(msb_cursor_t *s);
 
 /**
- *  \brief 文字列バッファを設定する
+ *  \fn				msb_cursor_load
+ *  \brief			Specify the binary buffer.
  *  
- *  \param [in] s 扱うビット配列
- *  \param [in] buf 設定したい文字列。NULLを指定するとmalloc生成
- *  \param [in] buf_len 文字列バッファの長さ[bytes]。未指定に戻す場合は０を指定。
- *  \return 今回扱う文字列バッファのビット単位の長さ
+ *  \param [in]	*s		Cursor instance
+ *  \param [in]	*buf	Binary buffer you want to treat.
+ *  \param [in]	buf_len	Length of *buf[bytes]
+ *  \return		Total num of bits.
  *  
  *  \details シーク作業用の一時変数群はリセットされます
  */
 size_t			msb_cursor_load(msb_cursor_t *s, unsigned char *buf, size_t buf_len);
 
-///長さ取得系列
+///Getting length
 /**
- *  \brief ビット配列の長さをバイト単位で取得する
+ *  \fn			msb_cursor_get_total_bytes
+ *  \brief		Get the total byte length of buffer.
  *  
- *  \param		対象のビット配列
- *  \return	現在扱っている配列長[bytes]
+ *  \param [in]	*s		Cursor instance.
+ *  \return	Total num of bytes.
  *  
  */
 size_t			msb_cursor_get_total_bytes(msb_cursor_t *s);
 
 /**
- *  \brief ビット配列の長さをビット単位で取得する
+ *  \fn			msb_cursor_get_total_bits
+ *  \brief		Get the total bit length of buffer.
  *  
- *  \param		対象のビット配列
- *  \return	現在扱っている配列長[bits]
+ *  \param [in]	*s		Cursor instance.
+ *  \return	Total num of bits.
  *  
  */
 size_t			msb_cursor_get_total_bits(msb_cursor_t *s);
 
-///位置を直接指定したデータ操作API
+///Data manipulating API with ansolute pointing.
 /**
- *  \brief 読み込み開始点を直接指定してint値を読み込む（符号なし）
+ *  \brief			Read as uint32 data from directly specified digit.
  *  
- *  \param		s			対象のビット配列
- *  \param		onset_bit	読み込み開始地点のビット
- *  \param		width_bit	開始地点から読み込む幅（0を指定すると0が帰ります）
- *  \return	読み出した値
- *	\remarks	値はビッグエンディアン（MSB）で読み出されます。
- *  
+ *  \param [in]	*s			Cursor instance
+ *  \param [in]	onset_bit	Onset bit.
+ *  \param [in]	width_bit	Width bit from Onset bit.
+ *  \return		Read value. as uint32_t.(If you want as other value, cast it for now).
+ *  \remarks		This read binary data in Big Endian.
  */
 uint32_t		msb_cursor_read_nth_uint32(msb_cursor_t *s, size_t onset_bit, size_t width_bit);
 
