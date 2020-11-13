@@ -66,6 +66,15 @@
  */
 #define msb_overwrite_nth(ptr, nth, width, val)	\
 	do{\
+		if(width == 1){\
+			if(val & 0x01){\
+				msb_set_nth(ptr, nth);\
+			}\
+			else{\
+				msb_clr_nth(ptr, nth);\
+			}\
+			break;\
+		}\
 		uint8_t answer = (uint8_t)((*ptr) & (~msbit_wmask(nth, width)));\
 		answer |= (uint8_t)(((val & msbit_rmask(width)) << (8 - width - nth)));\
 		*ptr = answer;\
@@ -79,7 +88,7 @@
  *	\param [in]	width(integer) 読みたいビット幅。0は無効試合
  *	\remarks	
  */
-#define msb_read_nth(ptr, nth, width) ((uint8_t)((*ptr) & (msbit_wmask(nth, width))) >> (8 - (width + nth)))
+#define msb_read_nth(ptr, nth, width) (width == 1) ? msb_get_nth(ptr, nth) : ((uint8_t)((*ptr) & (msbit_wmask(nth, width))) >> (8 - (width + nth)))
 
 #endif	/* !MSB_BITOP_H */
  
