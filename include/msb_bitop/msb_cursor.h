@@ -23,7 +23,7 @@ struct msb_cursor_s{
 	//シークしながら作業するための一時変数群
 	size_t			t_oct_bit;			//1オクテット中のシークインデックス（MSBを0、LSBを7として扱います）
 	size_t			t_oct_index;		//現在シーク中のバイト（デフォルトはゼロ）
-} msb_cursor_t;
+};
 
 
 #if defined(__cplusplus)
